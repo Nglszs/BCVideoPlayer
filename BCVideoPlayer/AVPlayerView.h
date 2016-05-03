@@ -35,7 +35,11 @@ typedef NS_ENUM(NSInteger,PlayState){
 @property(nonatomic,assign)PlayState playState;
 @property(nonatomic,assign)BOOL isDragSlider;
 /** 是否被用户暂停 */
-@property (nonatomic,assign) BOOL    isPauseByUser;
+@property (nonatomic,assign) BOOL isPauseByUser;
+@property (nonatomic,assign) BOOL isFristPlay;
 
+
+
+@property (nonatomic, strong) UIImageView *maskImage;
 - (instancetype)initFrame:(CGRect)frame andVideo:(NSURL*)url;
 @end

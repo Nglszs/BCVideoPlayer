@@ -16,6 +16,12 @@
 
     if (self = [super initWithFrame:frame]) {
         
+        
+        self.hidden = NO;
+        
+        //缩略图
+       
+        
         self.topImageView = [[UIImageView alloc]init];
         self.topImageView.userInteractionEnabled = YES;
         [self addSubview:_topImageView];
@@ -41,6 +47,10 @@
 }
 
 - (void)initView {
+    
+    
+    
+    
     
     //开始按钮
     self.startBtn = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -68,6 +78,7 @@
     self.totalTimeLabel.font = [UIFont systemFontOfSize:15];
     self.totalTimeLabel.textColor = [UIColor whiteColor];
     self.totalTimeLabel.text = @"00:00";
+    
     
     
     //进度条
@@ -132,5 +143,4 @@
 
 }
 
-#pragma mark 手势
 @end

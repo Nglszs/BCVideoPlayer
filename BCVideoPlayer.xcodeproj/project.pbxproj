@@ -259,6 +259,11 @@
 				TargetAttributes = {
 					040B58B51CD1A6D9005D00B7 = {
 						CreatedOnToolsVersion = 7.1;
+						SystemCapabilities = {
+							com.apple.BackgroundModes = {
+								enabled = 1;
+							};
+						};
 					};
 					040B58CE1CD1A6DA005D00B7 = {
 						CreatedOnToolsVersion = 7.1;
@@ -560,6 +565,7 @@
 				040B58E51CD1A6DA005D00B7 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		040B58E61CD1A6DA005D00B7 /* Build configuration list for PBXNativeTarget "BCVideoPlayerTests" */ = {
 			isa = XCConfigurationList;
@@ -568,6 +574,7 @@
 				040B58E81CD1A6DA005D00B7 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		040B58E91CD1A6DA005D00B7 /* Build configuration list for PBXNativeTarget "BCVideoPlayerUITests" */ = {
 			isa = XCConfigurationList;
@@ -576,6 +583,7 @@
 				040B58EB1CD1A6DA005D00B7 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

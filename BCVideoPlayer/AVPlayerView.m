@@ -23,6 +23,11 @@
 {
     self = [super initWithFrame:frame];
   
+    _maskImage = [[UIImageView alloc] initWithFrame:self.bounds];
+    [self addSubview:_maskImage];
+    
+    
+    _isFristPlay = YES;
     self.smallFrame = frame;
     self.bigFrame = CGRectMake(0, 0,[UIScreen mainScreen].bounds.size.height, [UIScreen mainScreen].bounds.size.width);
     
@@ -218,11 +223,12 @@
     [self.playerItme addObserver:self forKeyPath:@"playbackLikelyToKeepUp" options:NSKeyValueObservingOptionNew context:nil];
     
     
-    [self.player play];
-    self.maskView.startBtn.selected = YES;
-    self.playState = BCPlayerStatePlaying;
+    
+    self.playState = BCPlayerStatePause;
     [self.maskView.activity startAnimating];
 
+    
+    [self thumbnailImageRequest:10];
 
 }
 
@@ -303,7 +309,7 @@
             
             if (self.player.status == AVPlayerStatusReadyToPlay) {
                 
-                self.playState = BCPlayerStatePlaying;
+                self.playState = BCPlayerStatePause;
                 
                 [self.maskView.activity stopAnimating];
                 
@@ -333,7 +339,7 @@
             
             if (self.playerItme.playbackLikelyToKeepUp){
                 NSLog(@"playbackLikelyToKeepUp");
-                self.playState = BCPlayerStatePlaying;
+                self.playState = BCPlayerStatePause;
             }
         }
     }
@@ -379,8 +385,9 @@
         //self.playerItme.isPlaybackLikelyToKeepUp
         
         if ((self.maskView.progressView.progress - self.maskView.videoSlider.value) > 0.01) {
-            self.playState = BCPlayerStatePlaying;
-            [self.player play];
+            
+            self.playState = BCPlayerStatePause;
+            [_player play];
         }
         else
         {
@@ -432,17 +439,27 @@
 // 应用退到后台
 - (void)appDidEnterBackground
 {
+    
+    
+    
     [_player pause];
+    self.playState = BCPlayerStatePause;
+   
 }
 
 // 应用进入前台
 - (void)appDidEnterPlayGround
 {
     
-    if (self.playState == BCPlayerStatePlaying) {
+   
+    
+    if (self.playState == BCPlayerStatePause &&_isFristPlay == NO) {
+        
         [_player play];
     }
     
+    
+    _isFristPlay = NO;
 }
 
 
@@ -455,14 +472,22 @@
         if (btn.selected) {
             self.isPauseByUser = NO;
             [_player play];
+            
+            if (self.maskImage) {
+                self.maskImage.image = nil;
+            }
+            
             self.playState = BCPlayerStatePlaying;
         } else {
             [_player pause];
             self.isPauseByUser = YES;
             self.playState = BCPlayerStatePause;
         }
-
         
+        [self delayMaskView];
+    
+    
+    
     } else {//全屏
         
     
@@ -530,9 +555,61 @@
 
 }
 
+//缩略图
+-(void)thumbnailImageRequest:(CGFloat )timeBySecond{
+    //创建URL
+    NSURL *url = _videoURL;
+    //根据url创建AVURLAsset
+    AVURLAsset *urlAsset=[AVURLAsset assetWithURL:url];
+    //根据AVURLAsset创建AVAssetImageGenerator
+    AVAssetImageGenerator *imageGenerator=[AVAssetImageGenerator assetImageGeneratorWithAsset:urlAsset];
+    /*截图
+     * requestTime:缩略图创建时间
+     * actualTime:缩略图实际生成的时间
+     */
+    NSError *error=nil;
+    CMTime time=CMTimeMakeWithSeconds(timeBySecond, 10);//CMTime是表示电影时间信息的结构体，第一个参数表示是视频第几秒，第二个参数表示每秒帧数.(如果要活的某一秒的第几帧可以使用CMTimeMake方法)
+    CMTime actualTime;
+    CGImageRef cgImage= [imageGenerator copyCGImageAtTime:time actualTime:&actualTime error:&error];
+    if(error){
+        NSLog(@"截取视频缩略图时发生错误，错误信息：%@",error.localizedDescription);
+        return;
+    }
+    CMTimeShow(actualTime);
+    UIImage *image=[UIImage imageWithCGImage:cgImage];//转化为UIImage
+  
+    
+    self.maskImage.image = image;
+    CGImageRelease(cgImage);
+}
+
 - (void)dealloc {
 
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+
+}
+
+#pragma mark  隐藏和显示maskView
+- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
+
+    self.maskView.hidden = !self.maskView.hidden;
+
+    
+    [self delayMaskView];
+    
+
+}
+
+- (void)delayMaskView {
+
+    if (!self.maskView.hidden) {
+        
+        
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            
+            self.maskView.hidden = YES;
+        });
+    }
 
 }
 @end
