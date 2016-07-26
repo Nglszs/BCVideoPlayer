@@ -473,7 +473,7 @@
             self.isPauseByUser = NO;
             [_player play];
             
-            if (self.maskImage) {
+            if (self.maskImage.image) {
                 self.maskImage.image = nil;
             }
             
